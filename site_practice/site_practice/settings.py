@@ -120,3 +120,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+AUTH_USER_MODEL = 'main.AdvUser'    # 32.1 указание своей модели пользователя, у нас она унаследована от стандартной с 2мя дополнительными полями
