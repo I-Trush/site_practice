@@ -11,4 +11,6 @@ urlpatterns = [
     path('accounts/logout/', BBLogoutView.as_view(), name='logout'),
     path('accounts/profile/change/', ChangeUserInfoView.as_view(), name='profile_change'),
     path('account/password/change/', BBPasswordChangeView.as_view(), name='password_change'),
+    path('accounts/register/done/', RegisterDoneView.as_view(), name='register_done'),
+    path('accounts/register/', RegisterUserView.as_view(), name='register'),
 ]
