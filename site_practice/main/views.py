@@ -10,9 +10,11 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404
 from django.views.generic.base import TemplateView  # 32.4.1.2
+from django.core.signing import BadSignature    # 32.4.2
 
 from .models import *
 from .forms import *
+from .utilities import signer   #32.4.2
 
 
 def index(request):
@@ -72,5 +74,21 @@ class RegisterUserView(CreateView):     # 32.4.1.2
 
 class RegisterDoneView(TemplateView):
     template_name = 'main/register_done.html'
+
+
+def user_activate(request, sign):       # 32.4.2
+    try:
+        username = signer.unsign(sign)  # извлекаем имя пользователя из подписи
+    except BadSignature:    # если подпись скомпрометирована -то сообщение об ошибке
+        return render(request, 'main/bad_signature.html')
+    user = get_object_or_404(AdvUser, username=username)  # берем запись польз из базы по имени
+    if user.is_activated:
+        template= 'main/user_is_activated.html'     # если пользователь уже активирован то сообщаем об этом
+    else:
+        template = 'main/activation_done.html'      # если не активирован, то активируем и сохраняем запись
+        user.is_active = True
+        user.is_activated = True
+        user.save()
+    return render(request, template)
 
 

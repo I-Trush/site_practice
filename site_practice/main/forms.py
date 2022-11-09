@@ -25,7 +25,7 @@ class RegisterUserForm(forms.ModelForm):    # 32.4 регистрация и а�
 
     def clean(self):    # проверка на совпадение паролей осущ. только если 1й пароль прошел валидацию
         super().clean()
-        password1 = self.cleaned_data['password1']
+        password1 = self.cleaned_data['password1']      # если пароль левый qwerty123 то valid=False и вылетает ошибка на этой строке в дебагере, вместо того чтоб выдать сообщение об ошибке
         password2 = self.cleaned_data['password2']
         if password1 and password2 and password1 != password2:
             errors = {'password2': ValidationError('Введенные пароли не совпадают', code = 'password_mismatch')}
