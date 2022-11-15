@@ -12,7 +12,7 @@ class AdvUser(AbstractUser):
 class Rubric(models.Model):
     name = models.CharField(max_length=30, db_index=True, unique=True, verbose_name='Название')
     order = models.SmallIntegerField(default=0, db_index=True, verbose_name='Порядок')
-    super_rubric = models.ForeignKey('Super_Rubric', on_delete=models.PROTECT, null=True, blank=True, verbose_name='Надрубрика')
+    super_rubric = models.ForeignKey('SuperRubric', on_delete=models.PROTECT, null=True, blank=True, verbose_name='Надрубрика')
 
 
 class SuperRubricManager(models.Manager):
