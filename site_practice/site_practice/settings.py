@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'main.apps.MainConfig',
-    'bootstrap4'
+    'bootstrap4',
+    'django_cleanup',
+    'easy_thumbnails',
 ]
 
 MIDDLEWARE = [
@@ -125,3 +127,16 @@ STATIC_URL = '/static/'
 AUTH_USER_MODEL = 'main.AdvUser'    # 32.1 указание своей модели пользователя, у нас она унаследована от стандартной с 2мя дополнительными полями
 
 EMAIL_PORT = 1025
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+THUMBNAIL_ALIASES ={
+    '': {
+        'default': {
+            'size': (96,96),
+            'crop': 'scale',
+        },
+    },
+}
+THUMBNAIL_BASEDIR = 'sumbnails'
