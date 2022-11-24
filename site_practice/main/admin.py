@@ -76,3 +76,16 @@ class SubRubricAdmin(admin.ModelAdmin):
 
 admin.site.register(SubRubric, SubRubricAdmin)
 
+
+# 34.3 ==================================================================================================
+class AdditionalImageInLine(admin.TabularInline):
+    model = AdditionalImage
+
+
+class BbAdmin(admin.ModelAdmin):
+    list_display = ('rubric', 'title', 'content', 'author', 'created_at')
+    fields = (('rubric', 'author'), 'title', 'content', 'price', 'contacts', 'image', 'is_active')
+    inlines = (AdditionalImageInLine,)
+
+
+admin.site.register(Bb, BbAdmin)

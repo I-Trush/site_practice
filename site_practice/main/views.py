@@ -13,6 +13,9 @@ from django.views.generic.base import TemplateView  # 32.4.1.2
 from django.core.signing import BadSignature    # 32.4.2
 from django.contrib.auth import logout
 from django.contrib import messages
+from django.core.paginator import Paginator     # 34.4.1
+from django.db.models import Q
+
 
 from .models import *
 from .forms import *
@@ -115,7 +118,22 @@ class DeleteUserView(LoginRequiredMixin, DeleteView):
 
 
 def by_rubric(request, pk):
-    pass
-
+    rubric = get_object_or_404(SubRubric, pk=pk)
+    bbs = Bb.objects.filter(is_active=True, rubric=pk)
+    if 'keyword' in request.GET:
+        keyword = request.GET['keyword']
+        q = Q(title__icontains=keyword) | Q(content__icontains=keyword)
+        bbs = bbs.filter(q)
+    else:
+        keyword = ''
+    form = SearchForm(initial={'keyword': keyword})
+    paginator = Paginator(bbs, 2)
+    if 'page' in request.GET:
+        page_num = request.GET['page']
+    else:
+        page_num = 1
+    page = paginator.get_page(page_num)
+    context = {'rubric': rubric, 'page': page, 'bbs': page.object_list, 'form': form}
+    return render(request, 'main/by_rubric.html', context)
 
 
