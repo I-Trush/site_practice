@@ -3,6 +3,7 @@ from .models import *
 from django.contrib.auth import password_validation
 from django.core.exceptions import ValidationError
 from .apps import user_registered
+from django.forms import inlineformset_factory
 
 
 class ChangeUserInfoForm(forms.ModelForm):
@@ -58,3 +59,10 @@ class SearchForm(forms.Form):
     keyword = forms.CharField(required=False, max_length=20, label='')
 
 
+class BbForm(forms.Form):
+    class Meta:
+        model = Bb
+        fields = '__all__'
+        widgets = {'author': forms.HiddenInput}
+
+AIFormSet = inlineformset_factory(Bb, AdditionalImage, fields='__all__')

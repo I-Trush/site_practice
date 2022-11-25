@@ -8,7 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import UpdateView, CreateView, DeleteView    #32.3 редактирование данных пользователя
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.views.generic.base import TemplateView  # 32.4.1.2
 from django.core.signing import BadSignature    # 32.4.2
 from django.contrib.auth import logout
@@ -23,7 +23,9 @@ from .utilities import signer   #32.4.2
 
 
 def index(request):
-    return render(request, 'main/index.html')
+    bbs = Bb.objects.filter(is_active=True)[:10]
+    context = {'bbs': bbs}
+    return render(request, 'main/index.html', context)
 
 
 def other_page(request, page):
@@ -40,7 +42,9 @@ class BBLoginView(LoginView):
 
 @login_required()   # 32.2.2. доступ только авторизованным пользователям
 def profile(request):
-    return render(request, 'main/profile.html')
+    bbs = Bb.objects.filter(author=request.user.pk)     #  вывод объявлений оставленных текущим пользователем
+    context = {'bbs': bbs}
+    return render(request, 'main/profile.html', context)
 
 
 class BBLogoutView(LoginRequiredMixin, LogoutView):     # LoginRequiredMixin примесь делающая контроллер класс доступным только авторизованным пользователям
@@ -144,3 +148,27 @@ def detail(request, rubric_pk, pk):
     return render(request, 'main/detail.html', context)
 
 
+@login_required
+def profile_bb_detail(request, pk):
+    bb = get_object_or_404(Bb, pk=pk)
+    ais = bb.additionalimage_set.all()      # 34.4.2 additionalimage_set какой-то втроенный метод - перечень доп иллюстраций
+    context = {'bb': bb, 'ais': ais}
+    return render(request, 'main/profile_bb_detail.html', context)
+
+
+@login_required
+def profile_bb_add(request):
+    if request.method == 'POST':
+        form = BbForm(request.POST, request.FILES)
+        if form.is_valid():
+            bb = form.save()
+            formset = AIFormSet(request.POST, request.FILES, instance=bb)
+            if formset.is_valid():
+                formset.save()
+                messages.add_message(request, messages.SUCCESS, 'Объявление добавлено')
+                return redirect('main:profile')
+    else:
+        form = BbForm(initial={'author': request.user.pk})
+        formset = AIFormSet()
+    context = {'form': form, 'formset':formset}
+    return render(request, 'main/profile_bb_add.html', context)
