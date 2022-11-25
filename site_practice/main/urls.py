@@ -14,6 +14,7 @@ urlpatterns = [
     path('accounts/register/', RegisterUserView.as_view(), name='register'),
     path('accounts/register/activate/<str:sign>/', user_activate, name='register_activate'),
     path('accounts/profile/delete/', DeleteUserView.as_view(), name='profile_delete'),
+    path('<int:rubric_pk>/<int:pk>/', detail, name='detail'),
     path('<int:pk>/', by_rubric, name='by_rubric'),     # если этот маршрут поместить после other_page то django примет этот адрес за имя шаблона страници other_page и выдаст 404
     path('<str:page>/', other_page, name='other'),      # порядок имеет значение
 ]
