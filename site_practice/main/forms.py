@@ -55,11 +55,11 @@ class SubRubricForm(forms.ModelForm):
         fields = '__all__'
 
 
-class SearchForm(forms.Form):
+class SearchForm(forms.Form):   # у forms.Form нет атрибута save(), форма не связана с моделью
     keyword = forms.CharField(required=False, max_length=20, label='')
 
 
-class BbForm(forms.Form):
+class BbForm(forms.ModelForm):  # 34.5 только ModelForm
     class Meta:
         model = Bb
         fields = '__all__'
