@@ -141,11 +141,11 @@ def by_rubric(request, pk):
     return render(request, 'main/by_rubric.html', context)
 
 
-def detail(request, rubric_pk, pk):
-    bb = get_object_or_404(Bb, pk=pk)
-    ais = bb.additionalimage_set.all()      # 34.4.2 additionalimage_set какой-то втроенный метод - перечень доп иллюстраций
-    context = {'bb': bb, 'ais': ais}
-    return render(request, 'main/detail.html', context)
+# def detail(request, rubric_pk, pk):
+#     bb = get_object_or_404(Bb, pk=pk)
+#     ais = bb.additionalimage_set.all()      # 34.4.2 additionalimage_set какой-то втроенный метод - перечень доп иллюстраций
+#     context = {'bb': bb, 'ais': ais}
+#     return render(request, 'main/detail.html', context)
 
 
 @login_required
@@ -203,4 +203,28 @@ def profile_bb_delete(request, pk):
     else:
         context = {'bb': bb}
         return render(request, 'main/profile_bb_delete.html', context)
+
+
+def detail(request, rubric_pk, pk):     # 35.3
+    bb = Bb.objects.get(pk=pk)
+    ais = bb.additionalimage_set.all()
+    comments = Comment.objects.filter(bb=pk, is_active=True)    # bb=pk? или же bb.pk
+    initial = {'bb': bb.pk}
+    if request.user.is_authenticated:
+        initial['author'] = request.user.username
+        form_class = UserCommentForm
+    else:
+        form_class = GuestCommentForm
+    form = form_class(initial=initial)
+    if request.method == 'POST':
+        c_form = form_class(request.POST)
+        if c_form.is_valid():
+            c_form.save()
+            messages.add_message(request, messages.SUCCESS, 'Комментарий добавлен')
+        else:
+            form = c_form
+            messages.add_message(request, messages.WARNING, 'Комментарий не добавлен!')
+    context = {'bb': bb,'ais': ais, 'comments': comments, 'form': form}
+    return render(request, 'main/detail.html', context)
+
 
